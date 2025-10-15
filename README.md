@@ -1,90 +1,123 @@
-\# Web Application Vulnerability Assessment (DVWA)
+Web Application Vulnerability Assessment Report
+
+Project: DVWA (Damn Vulnerable Web Application)
+Target URL: http://host.docker.internal:8080
+Scan Tool: OWASP ZAP 2.16.1 (by Checkmarx)
+Report Generated: Wed, 15 Oct 2025 18:04:27
+
+1. Executive Summary <details>
+<summary>Click to expand</summary>
+
+This report summarizes an automated vulnerability assessment conducted against the DVWA instance. The scan focused on security misconfigurations, headers, cookies, and potential web-based vulnerabilities.
+
+Risk Level	Number of Alerts
+High	0
+Medium	2
+Low	7
+Informational	5
+False Positives	0
+
+Note: DVWA is intentionally vulnerable for testing and educational purposes. Some findings are expected.
+
+</details>
+2. Key Vulnerabilities & Recommendations <details>
+<summary>Click to expand</summary>
+Medium-Risk Findings
+<details> <summary>1. Content Security Policy (CSP) Header Not Set</summary>
+
+Impact: Risk of XSS and data injection attacks.
+
+Affected URLs: /, /login.php, /sitemap.xml
+
+Recommendation: Implement a strict CSP header:
+
+Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:;
 
 
+References:
 
-\## Overview
+OWASP CSP Cheat Sheet
 
-This project demonstrates a full-scale web application vulnerability assessment using \*\*Damn Vulnerable Web Application (DVWA)\*\*, performed in an isolated Docker environment.  
+MDN CSP Guide
 
-It showcases practical skills in reconnaissance, vulnerability scanning, risk analysis, and remediation planning — core competencies for cybersecurity analysts and incident responders.
+</details> <details> <summary>2. Missing Anti-clickjacking Header</summary>
 
+Impact: Pages may be embedded in malicious frames.
 
+Affected URLs: /, /login.php
 
-\*\*Author:\*\* Abhijay Nair  
+Recommendation: Add one of the following headers:
 
-\*\*Role:\*\* Cybersecurity Lead | GRC \& Threat Detection Specialist  
-
-\*\*Tools Used:\*\* Docker, Nmap, OWASP ZAP, Burp Suite, PowerShell  
-
-
-
-\## Objectives
-
-\- Simulate a real-world web app vulnerability assessment safely.
-
-\- Identify misconfigurations and security flaws.
-
-\- Generate professional vulnerability reports with evidence.
-
-\- Demonstrate GRC policy alignment (OWASP, NIST 800-53, ISO 27001 controls).
+X-Frame-Options: DENY
 
 
+or
 
-\## Lab Architecture
-
-The DVWA application runs inside a Docker container bound to `127.0.0.1` for isolation.  
-
-Scans and analysis are performed locally to prevent exposure.
+Content-Security-Policy: frame-ancestors 'none';
 
 
+Reference: MDN X-Frame-Options
 
-Host (Windows)
+</details>
+Low-Risk Findings
+Issue	Recommendation
+Cookie No HttpOnly Flag	Set HttpOnly on all session cookies.
+Cookie without SameSite Attribute	Set SameSite=Lax or Strict.
+In Page Banner Information Leak	Hide server version info (ServerTokens Prod in Apache).
+Insufficient Site Isolation (Spectre)	Add Cross-Origin-Resource-Policy: same-origin.
+Permissions Policy Header Not Set	Restrict features: Permissions-Policy: geolocation=(), microphone=().
+Server Leaks Version Information	Suppress server info in HTTP headers.
+X-Content-Type-Options Header Missing	Add X-Content-Type-Options: nosniff.
+Informational Alerts
 
-└── Docker Container → DVWA
+Authentication Request Identified – login POST detected.
 
-├── Port: 8080 (localhost only)
+Session Management Response Identified – PHPSESSID cookie recognized.
 
-├── MySQL (internal)
+Non-Storable / Cacheable Content – caching headers are present.
 
-└── Apache Web Server
+</details>
+3. Security Hardening Recommendations <details>
+<summary>Click to expand</summary>
+Recommended Security Headers
+Content-Security-Policy: default-src 'self';
+X-Frame-Options: DENY;
+X-Content-Type-Options: nosniff;
+Referrer-Policy: no-referrer;
+Permissions-Policy: geolocation=(), microphone=();
+Cross-Origin-Resource-Policy: same-origin;
 
+Cookies & Session Management
 
+Use Secure, HttpOnly, SameSite=Strict for all cookies.
 
-\## Phases
+Rotate session IDs after login and invalidate on logout.
 
-1\. \*\*Setup \& Environment Hardening\*\*
+Server & Version Information
 
-2\. \*\*Reconnaissance with Nmap\*\*
+Hide Apache version & OS:
 
-3\. \*\*Dynamic Analysis with OWASP ZAP\*\*
+ServerTokens Prod
+ServerSignature Off
 
-4\. \*\*Manual Testing (Burp Suite)\*\*
+</details>
+4. Tools & References <details>
+<summary>Click to expand</summary>
 
-5\. \*\*Reporting \& GRC Alignment\*\*
+OWASP ZAP: https://www.zaproxy.org
 
+OWASP Secure Headers Guide: https://owasp.org/www-project-secure-headers
 
+CSP Cheat Sheet: https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html
 
-\## Results (to be updated)
+MDN Security Headers: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers
 
-\- Critical vulnerabilities identified.
+</details>
+5. Conclusion <details>
+<summary>Click to expand</summary>
 
-\- Recommendations documented in `report/`.
+No high-risk vulnerabilities were found. Medium- and low-risk findings are primarily related to security headers, cookie configurations, and server information leaks.
 
+Implementing the recommendations above will strengthen the application’s security posture and demonstrate a professional approach to vulnerability management.
 
-
-\## Repository Structure
-
-webapp-vuln-assessment/
-
-├─ scans/
-
-├─ report/
-
-│ └─ screenshots/
-
-├─ scripts/
-
-└─ README.md
-
-
-
+</details>
