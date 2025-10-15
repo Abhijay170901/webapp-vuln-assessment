@@ -18,7 +18,6 @@ Informational	5
 False Positives	0
 
 Note: DVWA is intentionally vulnerable for testing and educational purposes. Some findings are expected.
-
 </details>
 2. Key Vulnerabilities & Recommendations <details>
 <summary>Click to expand</summary>
